@@ -169,10 +169,6 @@ function Dashboard({ user }: DashboardProps) {
                     
                     <div className="space-y-2 text-sm text-gray-300">
                       <div className="flex items-center gap-2">
-                        <Phone size={16} className="text-yellow-500" />
-                        <span>{appointment.phone_number}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
                         <Calendar size={16} className="text-yellow-500" />
                         <span>
                           {format(new Date(appointment.appointment_date), "dd 'de' MMMM", {

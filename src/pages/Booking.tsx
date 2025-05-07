@@ -10,7 +10,6 @@ import type { Service, Appointment } from '../types';
 
 function Booking() {
   const [clientName, setClientName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<'morning' | 'afternoon'>('morning');
@@ -75,19 +74,6 @@ function Booking() {
     }
   };
 
-  const formatPhoneNumber = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 2) return numbers;
-    if (numbers.length <= 6) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-    if (numbers.length <= 10) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    setPhoneNumber(formatted);
-  };
-
   const isTimeSlotAvailable = (dateTime: Date) => {
     if (!selectedService) return false;
 
@@ -119,7 +105,7 @@ function Booking() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !phoneNumber || !selectedService || !selectedDate) return;
+    if (!clientName || !selectedService || !selectedDate) return;
 
     if (!isTimeSlotAvailable(selectedDate)) {
       alert('Este horário não está mais disponível. Por favor, escolha outro horário.');
@@ -131,19 +117,17 @@ function Booking() {
     try {
       const { error } = await supabase.from('appointments').insert({
         client_name: clientName,
-        phone_number: phoneNumber,
         service_id: selectedService.id,
         appointment_date: selectedDate.toISOString()
       });
 
       if (error) throw error;
 
-      const message = `Olá! Gostaria de agendar um horário:\n\nNome: ${clientName}\nTelefone: ${phoneNumber}\nServiço: ${selectedService.name}\nData: ${format(selectedDate, 'dd/MM/yyyy')}\nHorário: ${format(selectedDate, 'HH:mm')}`;
+      const message = `Olá! Gostaria de agendar um horário:\n\nNome: ${clientName}\nServiço: ${selectedService.name}\nData: ${format(selectedDate, 'dd/MM/yyyy')}\nHorário: ${format(selectedDate, 'HH:mm')}`;
       const whatsappUrl = `https://wa.me/5585994015283?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
 
       setClientName('');
-      setPhoneNumber('');
       setSelectedService(null);
       setSelectedDate(null);
       await fetchAppointments();
@@ -232,22 +216,6 @@ function Booking() {
 
           <div>
             <label className="flex items-center gap-2 text-gray-300 mb-2 text-sm sm:text-base">
-              <Phone size={18} className="text-yellow-500" />
-              <span>Telefone</span>
-            </label>
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={handlePhoneChange}
-              placeholder="(85) 99999-9999"
-              className="w-full px-3 py-2 sm:p-3 bg-black/50 border border-white/10 rounded-md text-white focus:outline-none focus:border-yellow-500 transition-colors"
-              required
-              pattern="\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}"
-            />
-          </div>
-
-          <div>
-            <label className="flex items-center gap-2 text-gray-300 mb-2 text-sm sm:text-base">
               <Scissors size={18} className="text-yellow-500" />
               <span>Serviço</span>
             </label>
@@ -290,7 +258,7 @@ function Booking() {
 
           <button
             type="submit"
-            disabled={loading || !clientName || !phoneNumber || !selectedService || !selectedDate}
+            disabled={loading || !clientName || !selectedService || !selectedDate}
             className="w-full bg-yellow-500 text-black py-3 rounded-md hover:bg-yellow-400 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors font-semibold mt-6"
           >
             {loading ? 'Agendando...' : 'Agendar Horário'}
