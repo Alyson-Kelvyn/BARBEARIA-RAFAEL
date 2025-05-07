@@ -217,12 +217,12 @@ select {
 
 /* Date picker modal */
 .date-picker-modal {
-  @apply fixed inset-0 bg-black z-50 flex flex-col;
+  @apply fixed inset-0 bg-black z-50 flex flex-col items-center justify-center;
   min-height: var(--app-height);
 }
 
 .date-picker-header {
-  @apply p-4 flex items-center justify-between border-b border-white/10 sticky top-0 bg-black z-10;
+  @apply p-4 flex items-center justify-between border-b border-white/10 sticky top-0 bg-black z-10 w-full max-w-md;
 }
 
 .date-picker-content {

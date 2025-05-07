@@ -279,7 +279,7 @@ function Booking() {
             </button>
           </div>
 
-          <div className="date-picker-content">
+          <div className="date-picker-content max-w-md mx-auto w-full">
             <DatePicker
               selected={selectedDate}
               onChange={(date) => {
@@ -347,7 +347,7 @@ function Booking() {
             </div>
           </div>
 
-          <div className="date-picker-footer">
+          <div className="date-picker-footer max-w-md mx-auto w-full">
             <button
               type="button"
               onClick={() => setShowDatePicker(false)}
