@@ -72,15 +72,30 @@ function Dashboard({ user }: DashboardProps) {
     if (!confirm('Tem certeza que deseja excluir este agendamento?')) return;
 
     try {
-      const { error } = await supabase
+      // Primeiro, tenta excluir do banco de dados
+      const { error, data } = await supabase
         .from('appointments')
         .delete()
-        .eq('id', appointmentId);
+        .eq('id', appointmentId)
+        .select()
+        .single();
 
-      if (error) throw error;
-      await fetchAppointments();
+      if (error) {
+        console.error('Erro ao excluir agendamento:', error);
+        alert('Erro ao excluir agendamento. Por favor, tente novamente.');
+        return;
+      }
+
+      // Se chegou aqui, a exclusão foi bem-sucedida
+      // Atualiza a lista localmente removendo o agendamento excluído
+      setAppointments(prevAppointments => 
+        prevAppointments.filter(appointment => appointment.id !== appointmentId)
+      );
+      
+      alert('Agendamento excluído com sucesso!');
     } catch (error) {
       console.error('Error deleting appointment:', error);
+      alert('Erro ao excluir agendamento. Por favor, tente novamente.');
     }
   };
 
@@ -89,15 +104,35 @@ function Dashboard({ user }: DashboardProps) {
     navigate('/login');
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string, appointmentDate: string) => {
+    const now = new Date();
+    const appointmentDateTime = new Date(appointmentDate);
+    
+    // Se o horário já passou, mostra como concluído
+    if (appointmentDateTime < now) {
+      return 'bg-green-500/10 text-green-500 border-green-500/20';
+    }
+
     switch (status) {
       case 'confirmed':
-        return 'bg-green-500/10 text-green-500 border-green-500/20';
+        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
       case 'cancelled':
         return 'bg-red-500/10 text-red-500 border-red-500/20';
       default:
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
     }
+  };
+
+  const getStatusText = (status: string, appointmentDate: string) => {
+    const now = new Date();
+    const appointmentDateTime = new Date(appointmentDate);
+    
+    // Se o horário já passou, mostra como concluído
+    if (appointmentDateTime < now) {
+      return 'Concluído';
+    }
+
+    return appointment.status === 'cancelled' ? 'Cancelado' : 'Confirmado';
   };
 
   return (
@@ -160,10 +195,11 @@ function Dashboard({ user }: DashboardProps) {
                       <h3 className="font-semibold">{appointment.client_name}</h3>
                       <span
                         className={`text-xs px-2 py-1 rounded-full border ${getStatusColor(
-                          appointment.status || 'confirmed'
+                          appointment.status || 'confirmed',
+                          appointment.appointment_date
                         )}`}
                       >
-                        {appointment.status === 'cancelled' ? 'Cancelado' : 'Confirmado'}
+                        {getStatusText(appointment.status || 'confirmed', appointment.appointment_date)}
                       </span>
                     </div>
                     

@@ -89,6 +89,17 @@ EXCEPTION
   WHEN others THEN NULL;
 END $$;
 
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Allow authenticated delete appointments" ON appointments;
+  CREATE POLICY "Allow authenticated delete appointments"
+    ON appointments FOR DELETE
+    TO authenticated
+    USING (auth.uid() = user_id OR user_id IS NULL);
+EXCEPTION
+  WHEN others THEN NULL;
+END $$;
+
 -- Create index for appointment dates
 DO $$
 BEGIN
