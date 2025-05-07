@@ -41,15 +41,15 @@ html, body {
 }
 
 .react-datepicker__current-month {
-  @apply !text-white !text-2xl !font-bold !mb-8;
+  @apply !text-white !text-lg !font-bold !mb-2;
 }
 
 .react-datepicker__day-names {
-  @apply !mt-0 !mb-2 !flex !justify-between !px-2;
+  @apply !mt-0 !mb-0.5 !flex !justify-between !px-0.5;
 }
 
 .react-datepicker__day-name {
-  @apply !text-gray-400 !text-sm !w-12 !h-12 !leading-[3rem] !m-0 !flex !items-center !justify-center;
+  @apply !text-gray-400 !text-xs !w-7 !h-7 !leading-7 !m-0 !flex !items-center !justify-center;
 }
 
 .react-datepicker__month {
@@ -57,16 +57,16 @@ html, body {
 }
 
 .react-datepicker__week {
-  @apply !flex !justify-between !px-2 !mb-1;
+  @apply !flex !justify-between !px-0.5 !mb-0;
 }
 
 .react-datepicker__day {
-  @apply !text-white !w-12 !h-12 !leading-[3rem] !m-0 !text-base !flex !items-center !justify-center relative;
+  @apply !text-white !w-7 !h-7 !leading-7 !m-0 !text-xs !flex !items-center !justify-center relative;
 }
 
 .react-datepicker__day::after {
   content: '';
-  @apply absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full;
+  @apply absolute bottom-0.5 left-1/2 -translate-x-1/2 w-0.5 h-0.5 rounded-full;
 }
 
 .react-datepicker__day--selected {
@@ -111,7 +111,7 @@ html, body {
 
 /* Time period and slots */
 .time-period-button {
-  @apply w-full px-4 py-4 rounded-xl text-center transition-all duration-200 font-medium text-base relative overflow-hidden;
+  @apply w-full px-2 py-2 rounded-md text-center transition-all duration-200 font-medium text-xs relative overflow-hidden;
 }
 
 .time-period-button.selected {
@@ -128,7 +128,7 @@ html, body {
 }
 
 .time-slot-button {
-  @apply w-full px-4 py-4 rounded-xl text-center transition-all duration-200 font-medium text-base relative overflow-hidden;
+  @apply w-full px-2 py-2 rounded-md text-center transition-all duration-200 font-medium text-xs relative overflow-hidden;
 }
 
 .time-slot-button.selected {
@@ -152,7 +152,7 @@ html, body {
 @media (max-width: 640px) {
   .react-datepicker__day-name,
   .react-datepicker__day {
-    @apply !text-base !w-[14.28%] !h-12;
+    @apply !text-xs !w-[14.28%] !h-8;
   }
 
   /* Improve touch targets */
@@ -222,13 +222,13 @@ select {
 }
 
 .date-picker-header {
-  @apply p-4 flex items-center justify-between border-b border-white/10 sticky top-0 bg-black z-10 w-full max-w-md;
+  @apply p-2 flex items-center justify-between border-b border-white/10 sticky top-0 bg-black z-10 w-full max-w-md;
 }
 
 .date-picker-content {
-  @apply flex-1 overflow-auto px-4 py-6;
+  @apply flex-1 overflow-auto px-2 py-2;
 }
 
 .date-picker-footer {
-  @apply p-4 border-t border-white/10 sticky bottom-0 bg-black safe-area-pb;
+  @apply p-2 border-t border-white/10 sticky bottom-0 bg-black safe-area-pb;
 }

@@ -18,7 +18,50 @@ function Dashboard({ user }: DashboardProps) {
 
   useEffect(() => {
     fetchAppointments();
+    // Limpa agendamentos antigos quando o componente montar
+    cleanupOldAppointments();
   }, [filter]);
+
+  const cleanupOldAppointments = async () => {
+    try {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      yesterday.setHours(0, 0, 0, 0);
+
+      // Busca agendamentos antigos
+      const { data: oldAppointments, error: fetchError } = await supabase
+        .from('appointments')
+        .select('id')
+        .lt('appointment_date', yesterday.toISOString());
+
+      if (fetchError) {
+        console.error('Erro ao buscar agendamentos antigos:', fetchError);
+        return;
+      }
+
+      if (oldAppointments && oldAppointments.length > 0) {
+        // Exclui os agendamentos antigos
+        const { error: deleteError } = await supabase
+          .from('appointments')
+          .delete()
+          .lt('appointment_date', yesterday.toISOString());
+
+        if (deleteError) {
+          console.error('Erro ao excluir agendamentos antigos:', deleteError);
+          return;
+        }
+
+        // Atualiza a lista local removendo os agendamentos antigos
+        setAppointments(prevAppointments => 
+          prevAppointments.filter(appointment => 
+            new Date(appointment.appointment_date) >= yesterday
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Erro ao limpar agendamentos antigos:', error);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
