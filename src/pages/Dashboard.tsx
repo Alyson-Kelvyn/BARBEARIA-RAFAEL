@@ -72,13 +72,11 @@ function Dashboard({ user }: DashboardProps) {
     if (!confirm('Tem certeza que deseja excluir este agendamento?')) return;
 
     try {
-      // Primeiro, tenta excluir do banco de dados
-      const { error, data } = await supabase
+      // Exclui do banco de dados
+      const { error } = await supabase
         .from('appointments')
         .delete()
-        .eq('id', appointmentId)
-        .select()
-        .single();
+        .eq('id', appointmentId);
 
       if (error) {
         console.error('Erro ao excluir agendamento:', error);
