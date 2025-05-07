@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Scissors, Lock, Mail, AlertCircle } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Scissors, Lock, Mail, AlertCircle, ArrowLeft } from 'lucide-react';
 import { supabase } from '../supabase';
 
 function Login() {
@@ -34,6 +34,13 @@ function Login() {
     <div className="min-h-screen app-background text-white flex items-center justify-center p-4 safe-area-pb">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <Link
+            to="/"
+            className="absolute left-4 top-4 p-2 text-gray-400 hover:text-yellow-500 transition-colors"
+            title="Voltar"
+          >
+            <ArrowLeft size={24} />
+          </Link>
           <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-yellow-500/20 to-yellow-500/10 backdrop-blur-sm flex items-center justify-center mb-4 border border-yellow-500/20">
             <Scissors size={36} className="text-yellow-500" />
           </div>
@@ -97,12 +104,6 @@ function Login() {
               'Entrar'
             )}
           </button>
-
-          <p className="text-sm text-gray-400 text-center mt-4">
-            Credenciais padrão:<br />
-            Email: admin@barbearia.com<br />
-            Senha: admin123
-          </p>
         </form>
       </div>
     </div>
