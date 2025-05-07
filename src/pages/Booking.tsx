@@ -74,10 +74,20 @@ function Booking() {
     }
   };
 
+  const getCurrentBrasiliaTime = () => {
+    const now = new Date();
+    // Ajusta para o fuso horário de Brasília (UTC-3)
+    return new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+  };
+
   const isTimeSlotAvailable = (dateTime: Date) => {
     if (!selectedService) return false;
 
-    if (isBefore(dateTime, new Date())) {
+    const now = getCurrentBrasiliaTime();
+    const isToday = dateTime.toDateString() === now.toDateString();
+    
+    // Se for hoje, verifica se o horário já passou
+    if (isToday && dateTime <= now) {
       return false;
     }
 
@@ -140,41 +150,48 @@ function Booking() {
   };
 
   const getTimeSlots = () => {
-    if (!selectedDate || !selectedService) return [];
-    
-    const slots = [];
-    let startHour, endHour;
-    
-    switch (selectedPeriod) {
-      case 'morning':
-        startHour = 8;
-        endHour = 12;
-        break;
-      case 'afternoon':
-        startHour = 14;
-        endHour = 18;
-        break;
-      default:
+    if (!selectedDate) return [];
+
+    const now = getCurrentBrasiliaTime();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const slots: Date[] = [];
+    const startHour = selectedPeriod === 'morning' ? 8 : 13;
+    const endHour = selectedPeriod === 'morning' ? 12 : 18;
+
+    // Se for hoje, ajusta o horário inicial para o momento atual
+    let currentStartHour = startHour;
+    let currentStartMinute = 0;
+
+    if (isToday) {
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      // Se o horário atual já passou do período da manhã/tarde
+      if ((selectedPeriod === 'morning' && currentHour >= 12) || 
+          (selectedPeriod === 'afternoon' && currentHour >= 18)) {
         return [];
-    }
+      }
 
-    let currentTime = new Date(selectedDate);
-    currentTime.setHours(startHour, 0, 0, 0);
-    const endTime = new Date(selectedDate);
-    endTime.setHours(endHour, 0, 0, 0);
-
-    if (format(currentTime, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')) {
-      const now = new Date();
-      if (now > currentTime) {
-        currentTime = new Date(now.setMinutes(Math.ceil(now.getMinutes() / 30) * 30));
+      // Se ainda está no período atual
+      if (currentHour >= startHour && currentHour < endHour) {
+        currentStartHour = currentHour;
+        currentStartMinute = currentMinute;
       }
     }
 
-    while (currentTime < endTime) {
-      if (isTimeSlotAvailable(currentTime)) {
-        slots.push(new Date(currentTime));
+    for (let hour = currentStartHour; hour < endHour; hour++) {
+      const startMinute = hour === currentStartHour ? currentStartMinute : 0;
+      for (let minute = startMinute; minute < 60; minute += 30) {
+        const slot = new Date(selectedDate);
+        slot.setHours(hour, minute, 0, 0);
+
+        // Verifica se o horário está disponível
+        if (!isTimeSlotAvailable(slot)) {
+          continue;
+        }
+
+        slots.push(slot);
       }
-      currentTime = addMinutes(currentTime, 30);
     }
 
     return slots;
@@ -291,9 +308,10 @@ function Booking() {
               }}
               inline
               locale={ptBR}
-              minDate={startOfToday()}
+              minDate={getCurrentBrasiliaTime()}
               filterDate={(date) => {
                 const day = date.getDay();
+                // Não permite domingos
                 return day !== 0;
               }}
             />
